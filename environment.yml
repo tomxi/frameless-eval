@@ -1,0 +1,16 @@
+name: frameless-eval
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - jupyter
+  - ipykernel
+  - notebook
+  - jupyterlab
+  - matplotlib
+  - pandas
+  - scipy
+  - numpy
+  - pip:
+    - mir_eval

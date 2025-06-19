@@ -1,0 +1,53 @@
+[project]
+name = "frameless-eval"
+version = "0.1.0"
+description = "Lose the Frames: Efficient Music Structure Analysis Evaluations with Event-Based Metrics"
+authors = [
+    { name = "Tom Xi", email = "tom.xi@nyu.edu" }
+]
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["music structure analysis", "evaluation", "event-based metrics"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "numpy",
+    "scipy",
+    "pandas",
+    "mir_eval",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/tomxi/frameless-eval"
+"Bug Tracker" = "https://github.com/tomxi/frameless-eval/issues"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["frameless_eval*"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ipykernel",
+    "flake8",
+    "black",
+    "isort",
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+pythonpath = "." 

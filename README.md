@@ -1,5 +1,7 @@
 # frameless_eval
 
+![thumbnail](notebooks/figs/thumbnail.png)
+
 WIP repo accompanying the following paper:
 > Lose the Frames: Event-based Metrics for Efficient Music Structure Analysis Evaluations
 > Qingyang Xi, Brian McFee. International Society for Music Information Retrieval (ISMIR) conference. 2025.

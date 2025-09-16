@@ -4,7 +4,12 @@ import numpy as np
 
 __all__ = ["meet", "align_hier", "make_common_itvls", "labels_at_ts"]
 
-def meet(gridded_hier_labels: List[np.ndarray], compare_func: Callable = np.equal, mono: bool = False) -> np.ndarray:
+
+def meet(
+    gridded_hier_labels: List[np.ndarray],
+    compare_func: Callable = np.equal,
+    mono: bool = False,
+) -> np.ndarray:
     """
     Compute the meet matrix for a hierarchy of labels.
     hier_labels.shape = (depth, n_seg). output shape = (n_seg, n_seg)
@@ -28,7 +33,13 @@ def meet(gridded_hier_labels: List[np.ndarray], compare_func: Callable = np.equa
 
     return depths.astype(int)
 
-def align_hier(ref_itvls: List[np.ndarray], ref_labels: List[List[str]], est_itvls: List[np.ndarray], est_labels: List[List[str]]) -> Tuple[List[np.ndarray], List[List[str]], List[np.ndarray], List[List[str]]]:
+
+def align_hier(
+    ref_itvls: List[np.ndarray],
+    ref_labels: List[List[str]],
+    est_itvls: List[np.ndarray],
+    est_labels: List[List[str]],
+) -> Tuple[List[np.ndarray], List[List[str]], List[np.ndarray], List[List[str]]]:
     # First, find the maximum length of the reference
     _, t_end = mir_eval.hierarchy._hierarchy_bounds(ref_itvls)
 
@@ -42,6 +53,7 @@ def align_hier(ref_itvls: List[np.ndarray], ref_labels: List[List[str]], est_itv
     )
     return new_ref_itvls, new_ref_labels, new_est_itvls, new_est_labels
 
+
 def labels_at_ts(hier_itvls: list, hier_labels: list, ts: np.ndarray):
     """
     get label at ts for all levels in a hierarchy
@@ -51,6 +63,7 @@ def labels_at_ts(hier_itvls: list, hier_labels: list, ts: np.ndarray):
         result = _label_at_ts(itvls, labs, ts)
         results.append(result)
     return results
+
 
 def make_common_itvls(
     hier_itvls1: List[np.ndarray],
@@ -72,6 +85,7 @@ def make_common_itvls(
     gridded_labels2 = labels_at_ts(hier_itvls2, hier_labels2, common_bs[:-1])
     return common_itvls, gridded_labels1, gridded_labels2
 
+
 def _common_boundaries(list_of_itvls: List[np.ndarray]) -> np.ndarray:
     # Get the boundaries of both sets of intervals
     bs = set()
@@ -79,7 +93,10 @@ def _common_boundaries(list_of_itvls: List[np.ndarray]) -> np.ndarray:
         bs = bs.union(set(mir_eval.util.intervals_to_boundaries(itvls)))
     return np.array(sorted(bs))
 
-def _label_at_ts(itvls: np.ndarray, labels: Union[List[str], np.ndarray], ts: np.ndarray) -> np.ndarray:
+
+def _label_at_ts(
+    itvls: np.ndarray, labels: Union[List[str], np.ndarray], ts: np.ndarray
+) -> np.ndarray:
     """
     Assign labels to timestamps using interval boundaries.
 

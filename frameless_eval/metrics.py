@@ -9,7 +9,13 @@ from mir_eval.util import f_measure
 from frameless_eval.utils import meet, align_hier, make_common_itvls
 
 
-def pairwise(ref_itvls: np.ndarray, ref_labels: List[str], est_itvls: np.ndarray, est_labels: List[str], beta: float = 1.0) -> Tuple[float, float, float]:
+def pairwise(
+    ref_itvls: np.ndarray, 
+    ref_labels: List[str], 
+    est_itvls: np.ndarray, 
+    est_labels: List[str], 
+    beta: float = 1.0
+) -> Tuple[float, float, float]:
     # make sure est the same lenght as ref
     aligned_hiers = align_hier([ref_itvls], [ref_labels], [est_itvls], [est_labels])
     # Make common grid
@@ -32,7 +38,13 @@ def pairwise(ref_itvls: np.ndarray, ref_labels: List[str], est_itvls: np.ndarray
     return precision, recall, f_measure(precision, recall, beta=beta)
 
 
-def vmeasure(ref_itvls: np.ndarray, ref_labels: List[str], est_itvls: np.ndarray, est_labels: List[str], beta: float = 1.0) -> Tuple[float, float, float]:
+def vmeasure(
+    ref_itvls: np.ndarray, 
+    ref_labels: List[str], 
+    est_itvls: np.ndarray, 
+    est_labels: List[str], 
+    beta: float = 1.0
+) -> Tuple[float, float, float]:
     """
     V-measure
 
@@ -76,7 +88,11 @@ def vmeasure(ref_itvls: np.ndarray, ref_labels: List[str], est_itvls: np.ndarray
     p = (1.0 - pred_given_ref / z_est) if z_est > 0 else 0
     return p, r, f_measure(p, r, beta=beta)
 
-def _weighted_contingency(ref_labels: np.ndarray, est_labels: np.ndarray, durations: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def _weighted_contingency(
+    ref_labels: np.ndarray, 
+    est_labels: np.ndarray, 
+    durations: np.ndarray
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Build a weighted contingency matrix, used for V-measure.
     Each cell (i,j) sums the durations for frames with ref label i and est label j.
@@ -110,7 +126,13 @@ def _weighted_contingency(ref_labels: np.ndarray, est_labels: np.ndarray, durati
     ).toarray()
     return contingency, ref_classes, est_classes
 
-def _triplet_stats(ref_itvls: List[np.ndarray], ref_labels: List[List[str]], est_itvls: List[np.ndarray], est_labels: List[List[str]], transitive: bool = True) -> pd.DataFrame:
+def _triplet_stats(
+    ref_itvls: List[np.ndarray], 
+    ref_labels: List[List[str]], 
+    est_itvls: List[np.ndarray], 
+    est_labels: List[List[str]], 
+    transitive: bool = True
+) -> pd.DataFrame:
     # align hierarchies and build common grid
     aligned = align_hier(ref_itvls, ref_labels, est_itvls, est_labels)
     common_itvls, ref_labs, est_labs = make_common_itvls(*aligned)
@@ -142,10 +164,16 @@ def _triplet_stats(ref_itvls: List[np.ndarray], ref_labels: List[List[str]], est
     )
 
 
-def lmeasure(ref_itvls: List[np.ndarray], ref_labels: List[List[str]], est_itvls: List[np.ndarray], est_labels: List[List[str]], beta: float = 1.0, transitive: bool = True) -> Tuple[float, float, float]:
+def lmeasure(
+    ref_itvls: List[np.ndarray], 
+    ref_labels: List[List[str]], 
+    est_itvls: List[np.ndarray], 
+    est_labels: List[List[str]], 
+    beta: float = 1.0
+) -> Tuple[float, float, float]:
     # Now lmeasure_components returns a DataFrame with columns: dur, cap, ref, est
     l_parts = _triplet_stats(
-        ref_itvls, ref_labels, est_itvls, est_labels, transitive=transitive
+        ref_itvls, ref_labels, est_itvls, est_labels, transitive=True
     )
 
     # segment durations and normalized weights
@@ -154,7 +182,9 @@ def lmeasure(ref_itvls: List[np.ndarray], ref_labels: List[List[str]], est_itvls
 
     # per‐segment precision & recall
     seg_precision = l_parts["cap"] / l_parts["est"]
+    seg_precision[l_parts["est"] == 0] = 1
     seg_recall = l_parts["cap"] / l_parts["ref"]
+    seg_recall[l_parts["ref"] == 0] = 1
 
     # weighted-average precision & recall
     precision = seg_precision.dot(weights)
@@ -163,7 +193,12 @@ def lmeasure(ref_itvls: List[np.ndarray], ref_labels: List[List[str]], est_itvls
     return precision, recall, f_measure(precision, recall, beta=beta)
 
 
-def _segment_triplet_components(meet_ref: np.ndarray, meet_est: np.ndarray, seg_dur: np.ndarray, transitive: bool = True) -> Tuple[np.ndarray, np.ndarray]:
+def _segment_triplet_components(
+    meet_ref: np.ndarray, 
+    meet_est: np.ndarray, 
+    seg_dur: np.ndarray, 
+    transitive: bool = True
+) -> Tuple[np.ndarray, np.ndarray]:
     # Get out two list: weighted intersection and total of ref and est
     # given a segment idx, their relevance against each other segment.
     intersections = []
@@ -186,7 +221,12 @@ def _segment_triplet_components(meet_ref: np.ndarray, meet_est: np.ndarray, seg_
     return np.array(intersections), np.array(normalizers)
 
 
-def _count_weighted_inversions(a: np.ndarray, wa: np.ndarray, b: np.ndarray, wb: np.ndarray) -> float:
+def _count_weighted_inversions(
+    a: np.ndarray, 
+    wa: np.ndarray, 
+    b: np.ndarray, 
+    wb: np.ndarray
+) -> float:
     """
     Count weighted inversions between two arrays.
     An inversion is any pair (i, j) with a[i] >= b[j],
@@ -209,7 +249,13 @@ def _count_weighted_inversions(a: np.ndarray, wa: np.ndarray, b: np.ndarray, wb:
     return inversions
 
 
-def _compare_segment_rankings(ref: np.ndarray, est: np.ndarray, ref_w: Union[np.ndarray, None] = None, est_w: Union[np.ndarray, None] = None, transitive: bool = True) -> Tuple[float, float]:
+def _compare_segment_rankings(
+    ref: np.ndarray, 
+    est: np.ndarray, 
+    ref_w: Union[np.ndarray, None] = None, 
+    est_w: Union[np.ndarray, None] = None, 
+    transitive: bool = True
+) -> Tuple[float, float]:
     """
     Compute weighted ranking disagreements between two lists.
 
@@ -279,8 +325,3 @@ def _compare_segment_rankings(ref: np.ndarray, est: np.ndarray, ref_w: Union[np.
         for l1, l2 in level_pairs
     )
     return inversions, float(normalizer)
-
-
-
-
-
